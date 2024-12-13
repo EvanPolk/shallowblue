@@ -1,16 +1,13 @@
-import { useState } from 'react';
-import { createPositionWhite } from '../helper';
 import Square from './Square';
 
 function ChessBoard() {
-  const [grid, setGrid] = useState(createPositionWhite());
-
+  const grid: string[][] = new Array(8).fill(new Array(8).fill('wp'));
   return (
     <div>
-      {grid.map((row: number[], rowIndex: number) => (
-        <div key={rowIndex} className='flex'>
-          {row.map((piece, colIndex) => (
-            <Square rank={rowIndex} file={colIndex} pieceId={piece} />
+      {grid.map((row, i) => (
+        <div key={i} className='flex'>
+          {row.map((_, j) => (
+            <Square rank={i} file={j} />
           ))}
         </div>
       ))}
