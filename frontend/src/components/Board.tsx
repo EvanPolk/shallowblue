@@ -1,13 +1,13 @@
 import Square from './Square';
 
-function ChessBoard() {
+function Board() {
   const grid: string[][] = new Array(8).fill(new Array(8).fill('wp'));
   return (
     <div>
       {grid.map((row, i) => (
         <div key={i} className='flex'>
           {row.map((_, j) => (
-            <Square rank={i} file={j} />
+            <Square key={i + ' ' + j} rank={i} file={j} />
           ))}
         </div>
       ))}
@@ -15,4 +15,4 @@ function ChessBoard() {
   );
 }
 
-export default ChessBoard;
+export default Board;

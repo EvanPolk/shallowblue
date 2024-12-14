@@ -1,59 +1,44 @@
-import WhiteKing from './assets/WhiteKing.svg';
-import WhiteQueen from './assets/WhiteQueen.svg';
-import WhiteRook from './assets/WhiteRook.svg';
-import WhiteBishop from './assets/WhiteBishop.svg';
-import WhiteKnight from './assets/WhiteKnight.svg';
-import WhitePawn from './assets/WhitePawn.svg';
-import BlackKing from './assets/BlackKing.svg';
-import BlackQueen from './assets/BlackQueen.svg';
-import BlackRook from './assets/BlackRook.svg';
-import BlackBishop from './assets/BlackBishop.svg';
-import BlackKnight from './assets/BlackKnight.svg';
-import BlackPawn from './assets/BlackPawn.svg';
+import BlackBishop from './assets/bb.svg';
+import BlackKing from './assets/bk.svg';
+import BlackKnight from './assets/bn.svg';
+import BlackPawn from './assets/bp.svg';
+import BlackQueen from './assets/bq.svg';
+import BlackRook from './assets/br.svg';
+import WhiteBishop from './assets/wb.svg';
+import WhiteKing from './assets/wk.svg';
+import WhitePawn from './assets/wp.svg';
+import WhiteQueen from './assets/wq.svg';
+import WhiteRook from './assets/wr.svg';
+import WhiteKnight from './assets/wn.svg';
 
-type IconMapType = {
-  [key: number]: string;
+interface PieceImageMapType {
+  [key: string]: string;
+}
+
+export const PieceImageMap: PieceImageMapType = {
+  bk: BlackKing,
+  bq: BlackQueen,
+  br: BlackRook,
+  bb: BlackBishop,
+  bn: BlackKnight,
+  bp: BlackPawn,
+  wk: WhiteKing,
+  wq: WhiteQueen,
+  wr: WhiteRook,
+  wb: WhiteBishop,
+  wn: WhiteKnight,
+  wp: WhitePawn,
 };
 
-export const IconMap: IconMapType = {
-  1: WhiteKing,
-  2: WhiteQueen,
-  3: WhiteRook,
-  4: WhiteBishop,
-  5: WhiteKnight,
-  6: WhitePawn,
-  9: BlackKing,
-  10: BlackQueen,
-  11: BlackRook,
-  12: BlackBishop,
-  13: BlackKnight,
-  14: BlackPawn,
-};
-
-export default IconMap;
-
-export const createPositionWhite = () => {
+export const createPosition = () => {
   return [
-    [11, 13, 12, 10, 9, 12, 13, 11],
-    [14, 14, 14, 14, 14, 14, 14, 14],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [6, 6, 6, 6, 6, 6, 6, 6],
-    [3, 5, 4, 2, 1, 4, 5, 3],
-  ];
-};
-
-export const createPositionBlack = () => {
-  return [
-    [3, 5, 4, 2, 1, 4, 5, 3],
-    [6, 6, 6, 6, 6, 6, 6, 6],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [14, 14, 14, 14, 14, 14, 14, 14],
-    [11, 13, 12, 10, 9, 12, 13, 11],
+    ['br', 'bn', 'bb', 'bq', 'bk', 'bb', 'bn', 'br'],
+    ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
+    ['wr', 'wn', 'wb', 'wq', 'wk', 'wb', 'wn', 'wr'],
   ];
 };

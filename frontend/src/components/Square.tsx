@@ -8,13 +8,28 @@ interface Props {
 }
 
 function Square({ rank, file }: Props) {
-  const value = useContext(GameContext);
+  const { appState } = useContext(GameContext);
+
+  const isSelected = () => {
+    const potentialMoves = appState.potentialMoves;
+    return potentialMoves.some(
+      (coord) => coord[0] === rank && coord[1] === file
+    );
+  };
 
   return (
     <div
-      className={`h-20 w-20 ${rank % 2 === file % 2 ? 'bg-white' : 'bg-black'}`}
+      className={`h-20 w-20 ${
+        rank % 2 === file % 2
+          ? isSelected()
+            ? 'bg-white-select'
+            : 'bg-white'
+          : isSelected()
+          ? 'bg-black-select'
+          : 'bg-black'
+      }`}
     >
-      {value?.appState.position[rank][file] !== '' && (
+      {appState.position[rank][file] !== '' && (
         <Piece rank={rank} file={file} />
       )}
     </div>

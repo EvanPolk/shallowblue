@@ -1,6 +1,8 @@
 import { useContext } from 'react';
 import { PieceImageMap } from '../helper';
 import GameContext from '../contexts/context';
+import { generateCandidates } from '../reducer/actions/move';
+import arbiter from '../game/arbiter';
 
 interface Props {
   rank: number;
@@ -8,16 +10,21 @@ interface Props {
 }
 
 function Piece({ rank, file }: Props) {
-  const value = useContext(GameContext);
-  const [appState, disptach] = value;
+  const { appState, dispatch } = useContext(GameContext);
+  const position = appState.position;
+  const piece = appState.position[rank][file];
+
+  const handleClick = () => {
+    const potentialMoves = arbiter.getCandidateMoves({ position, rank, file });
+    if (potentialMoves !== undefined)
+      dispatch(generateCandidates({ potentialMoves }));
+  };
+
   return (
-    <div className='h-full w-full'>
-      {
-        <img
-          src={PieceImageMap[appState.position[rank][file]]}
-          className='h-full w-full'
-        ></img>
-      }
+    <div onClick={handleClick} className='h-full w-full'>
+      {piece !== undefined && piece !== '' && (
+        <img src={PieceImageMap[piece]} className='h-full w-full'></img>
+      )}
     </div>
   );
 }
