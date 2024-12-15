@@ -27,10 +27,15 @@ export const getKingMoves = ({ position, rank, file }: Props) => {
   directions.forEach((dir) => {
     const dy = rank + dir[0];
     const dx = file + dir[1];
-    if (
-      position[dy][dx] !== undefined &&
-      position[dy][dx][0] !== position[rank][file][0]
-    ) {
+
+    const dyInBounds = 0 <= dy && dy < 8;
+    const dxInBounds = 0 <= dx && dx < 8;
+
+    if (!dyInBounds || !dxInBounds) {
+      return;
+    }
+
+    if (position[dy][dx][0] !== position[rank][file][0]) {
       moves.push([dy, dx]);
     }
   });
@@ -58,10 +63,14 @@ export const getRookMoves = ({ position, rank, file }: Props) => {
     let dy = rank + dir[0];
     let dx = file + dir[1];
     for (let i = 0; i < 8; i++) {
-      if (position[dy][dx] === undefined) {
-        // potential move out of bounds
+      const dyInBounds = 0 <= dy && dy < 8;
+      const dxInBounds = 0 <= dx && dx < 8;
+
+      if (!dyInBounds || !dxInBounds) {
         break;
-      } else if (position[dy][dx] === '') {
+      }
+
+      if (position[dy][dx] === '') {
         // potential move on empty square
         moves.push([dy, dx]);
       } else if (position[dy][dx][0] !== position[rank][file][0]) {
@@ -92,10 +101,14 @@ export const getBishopMoves = ({ position, rank, file }: Props) => {
     let dy = rank + dir[0];
     let dx = file + dir[1];
     for (let i = 0; i < 8; i++) {
-      if (position[dy][dx] === undefined) {
-        // potential move out of bounds
+      const dyInBounds = 0 <= dy && dy < 8;
+      const dxInBounds = 0 <= dx && dx < 8;
+
+      if (!dyInBounds || !dxInBounds) {
         break;
-      } else if (position[dy][dx] === '') {
+      }
+
+      if (position[dy][dx] === '') {
         // potential move on empty square
         moves.push([dy, dx]);
       } else if (position[dy][dx][0] !== position[rank][file][0]) {
@@ -126,9 +139,18 @@ export const getKnightMoves = ({ position, rank, file }: Props) => {
     [1, -2],
     [-1, -2],
   ];
+
   directions.forEach((dir) => {
     const dy = rank + dir[0];
     const dx = file + dir[1];
+
+    const dyInBounds = 0 <= dy && dy < 8;
+    const dxInBounds = 0 <= dx && dx < 8;
+
+    if (!dyInBounds || !dxInBounds) {
+      return;
+    }
+
     if (position[dy][dx] === '') {
       // potential move on empty square
       moves.push([dy, dx]);
@@ -160,6 +182,14 @@ const getWhitePawnMoves = ({ position, rank, file }: Props) => {
   directions.forEach((dir) => {
     const dy = rank + dir[0];
     const dx = file + dir[1];
+
+    const dyInBounds = 0 <= dy && dy < 8;
+    const dxInBounds = 0 <= dx && dx < 8;
+
+    if (!dyInBounds || !dxInBounds) {
+      return;
+    }
+
     if (position[dy][dx] === '') {
       moves.push([dy, dx]);
     }
@@ -177,6 +207,14 @@ const getBlackPawnMoves = ({ position, rank, file }: Props) => {
   directions.forEach((dir) => {
     const dy = rank + dir[0];
     const dx = file + dir[1];
+
+    const dyInBounds = 0 <= dy && dy < 8;
+    const dxInBounds = 0 <= dx && dx < 8;
+
+    if (!dyInBounds || !dxInBounds) {
+      return;
+    }
+
     if (position[dy][dx] === '') {
       moves.push([dy, dx]);
     }
