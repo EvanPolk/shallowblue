@@ -1,18 +1,32 @@
 interface Props {
   position: string[][];
-  rank: number;
-  file: number;
-  x: number;
-  y: number;
+  oldX: number;
+  oldY: number;
+  targetX: number;
+  targetY: number;
 }
 
-export const movePiece = ({ position, rank, file, x, y }: Props) => {
+export const getPostMovePosition = ({
+  position,
+  oldY,
+  oldX,
+  targetX,
+  targetY,
+}: Props) => {
   const newPosition = position.map((row) => {
     return row.slice();
   });
 
-  const piece = newPosition[rank][file];
-  newPosition[rank][file] = '';
-  newPosition[y][x] = piece;
+  const piece = newPosition[oldY][oldX];
+  newPosition[oldY][oldX] = '';
+  newPosition[targetY][targetX] = piece;
   return newPosition;
+};
+
+interface TurnType {
+  turn: string;
+}
+
+export const getNextTurn = ({ turn }: TurnType) => {
+  return turn === 'w' ? 'b' : 'w';
 };

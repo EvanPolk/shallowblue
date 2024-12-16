@@ -9,5 +9,37 @@ export const reducer = (state, action) => {
         ...potentialMoves,
       };
     }
+
+    case actionTypes.CLEAR_CANDIDATES: {
+      const potentialMoves = action.payload;
+      return {
+        ...state,
+        ...potentialMoves,
+      };
+    }
+
+    case actionTypes.MOVE_PIECE: {
+      const position = action.payload;
+      return {
+        ...state,
+        ...position,
+      };
+    }
+
+    case actionTypes.SELECT_PIECE: {
+      const selectedPiece = action.payload;
+      return {
+        ...state,
+        ...selectedPiece,
+      };
+    }
+
+    case actionTypes.TOGGLE_TURN: {
+      const turn = action.payload;
+      return {
+        ...state,
+        ...turn,
+      };
+    }
   }
 };

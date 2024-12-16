@@ -92,7 +92,7 @@ export const getRookMoves = ({ position, rank, file }: Props) => {
 export const getBishopMoves = ({ position, rank, file }: Props) => {
   const moves: number[][] = [];
   const directions = [
-    [-1, -1],
+    [1, 1],
     [-1, 1],
     [1, -1],
     [-1, -1],

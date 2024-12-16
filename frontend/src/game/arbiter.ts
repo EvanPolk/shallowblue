@@ -1,3 +1,4 @@
+import { generateSelectedPiece } from '../reducer/actions/move';
 import {
   getBishopMoves,
   getKingMoves,
@@ -6,15 +7,29 @@ import {
   getQueenMoves,
   getRookMoves,
 } from './getMoves';
+import { getPostMovePosition } from './move';
 
-interface Props {
+interface CandidateMovesProps {
   position: string[][];
   rank: number;
   file: number;
 }
 
+interface MovePieceProps {
+  position: string[][];
+  oldY: number;
+  oldX: number;
+  targetX: number;
+  targetY: number;
+}
+
+interface SelectPieceProps {
+  rank: number;
+  file: number;
+}
+
 const arbiter = {
-  getCandidateMoves: ({ position, rank, file }: Props) => {
+  getCandidateMoves: ({ position, rank, file }: CandidateMovesProps) => {
     const piece = position[rank][file][1];
     if (piece === 'k') return getKingMoves({ position, rank, file });
     if (piece === 'q') return getQueenMoves({ position, rank, file });
@@ -22,6 +37,20 @@ const arbiter = {
     if (piece === 'b') return getBishopMoves({ position, rank, file });
     if (piece === 'n') return getKnightMoves({ position, rank, file });
     if (piece === 'p') return getPawnMoves({ position, rank, file });
+  },
+
+  getMovedPiecePosition: ({
+    position,
+    oldY,
+    oldX,
+    targetX,
+    targetY,
+  }: MovePieceProps) => {
+    return getPostMovePosition({ position, oldY, oldX, targetX, targetY });
+  },
+
+  getSelectedPiece: ({ rank, file }: SelectPieceProps) => {
+    return generateSelectedPiece({ rank, file });
   },
 };
 

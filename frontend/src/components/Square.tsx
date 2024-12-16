@@ -1,6 +1,13 @@
 import { useContext } from 'react';
 import Piece from './Piece';
 import GameContext from '../contexts/context';
+import MoveIndicator from './MoveIndicator';
+import arbiter from '../game/arbiter';
+import {
+  generateNewTurn,
+  generatePostMovePosition,
+} from '../reducer/actions/move';
+import { getNextTurn } from '../game/move';
 
 interface Props {
   rank: number;
@@ -8,30 +15,63 @@ interface Props {
 }
 
 function Square({ rank, file }: Props) {
-  const { appState } = useContext(GameContext);
+  const { appState, dispatch } = useContext(GameContext);
 
-  const isSelected = () => {
+  const isHighlightedMove = () => {
+    // Checking potential move selected
     const potentialMoves = appState.potentialMoves;
     return potentialMoves.some(
       (coord) => coord[0] === rank && coord[1] === file
     );
   };
 
+  const handleMoveClick = () => {
+    if (isHighlightedMove()) {
+      const newPosition = arbiter.getMovedPiecePosition({
+        position: appState.position,
+        oldX: appState.selectedPiece[1],
+        oldY: appState.selectedPiece[0],
+        targetX: file,
+        targetY: rank,
+      });
+      dispatch(
+        generatePostMovePosition({
+          position: newPosition,
+        })
+      );
+      const turn = getNextTurn({ turn: appState.turn });
+      dispatch(generateNewTurn({ turn }));
+    }
+  };
+
+  const cornerStyle = (rank: number, file: number) => {
+    if (rank === 0 && file === 0) {
+      return 'rounded-tl-md';
+    } else if (rank === 0 && file === 7) {
+      return 'rounded-tr-md';
+    } else if (rank === 7 && file === 0) {
+      return 'rounded-bl-md';
+    } else if (rank === 7 && file === 7) {
+      return 'rounded-br-md';
+    }
+    return '';
+  };
+
   return (
     <div
-      className={`h-20 w-20 ${
+      onClick={handleMoveClick}
+      className={`h-20 w-20 relative ${cornerStyle(rank, file)} ${
         rank % 2 === file % 2
-          ? isSelected()
+          ? isHighlightedMove()
             ? 'bg-white-select'
             : 'bg-white'
-          : isSelected()
+          : isHighlightedMove()
           ? 'bg-black-select'
           : 'bg-black'
       }`}
     >
-      {appState.position[rank][file] !== '' && (
-        <Piece rank={rank} file={file} />
-      )}
+      {isHighlightedMove() && <MoveIndicator rank={rank} file={file} />}
+      <Piece rank={rank} file={file} />
     </div>
   );
 }
