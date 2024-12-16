@@ -163,25 +163,18 @@ export const getKnightMoves = ({ position, rank, file }: Props) => {
 };
 
 export const getPawnMoves = ({ position, rank, file }: Props) => {
-  let moves: number[][] = [];
-  if (position[rank][file][0] === 'w') {
-    moves = [...moves, ...getWhitePawnMoves({ position, rank, file })];
-  } else if (position[rank][file][0] === 'b') {
-    moves = [...moves, ...getBlackPawnMoves({ position, rank, file })];
-  }
-  return moves;
-};
-
-const getWhitePawnMoves = ({ position, rank, file }: Props) => {
   const moves: number[][] = [];
-  const directions = [[-1, 0]];
-  if (rank === 6) {
-    directions.push([-2, 0]);
+  const directions = [[1, 0]];
+  const isWhite = position[rank][file][0] === 'w';
+  const originalRank = isWhite ? 6 : 1;
+
+  if (rank === originalRank) {
+    directions.push([2, 0]);
   }
 
   directions.forEach((dir) => {
-    const dy = rank + dir[0];
-    const dx = file + dir[1];
+    const dy = isWhite ? rank - dir[0] : rank + dir[0];
+    const dx = isWhite ? file - dir[1] : file + dir[1];
 
     const dyInBounds = 0 <= dy && dy < 8;
     const dxInBounds = 0 <= dx && dx < 8;
@@ -194,19 +187,15 @@ const getWhitePawnMoves = ({ position, rank, file }: Props) => {
       moves.push([dy, dx]);
     }
   });
-  return moves;
-};
 
-const getBlackPawnMoves = ({ position, rank, file }: Props) => {
-  const moves: number[][] = [];
-  const directions = [[1, 0]];
-  if (rank === 1) {
-    directions.push([2, 0]);
-  }
-
-  directions.forEach((dir) => {
-    const dy = rank + dir[0];
-    const dx = file + dir[1];
+  // Calculating diagonal attacks
+  const attacks = [
+    [1, 1],
+    [1, -1],
+  ];
+  attacks.forEach((dir) => {
+    const dy = isWhite ? rank - dir[0] : rank + dir[0];
+    const dx = isWhite ? file - dir[1] : file + dir[1];
 
     const dyInBounds = 0 <= dy && dy < 8;
     const dxInBounds = 0 <= dx && dx < 8;
@@ -215,7 +204,7 @@ const getBlackPawnMoves = ({ position, rank, file }: Props) => {
       return;
     }
 
-    if (position[dy][dx] === '') {
+    if (position[dy][dx] !== '') {
       moves.push([dy, dx]);
     }
   });

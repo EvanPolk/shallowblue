@@ -26,7 +26,10 @@ function Square({ rank, file }: Props) {
   };
 
   const handleMoveClick = () => {
-    if (isHighlightedMove()) {
+    const oldRank = appState.selectedPiece[0];
+    const oldFile = appState.selectedPiece[1];
+    const isUserTurn = appState.turn === appState.position[oldRank][oldFile][0];
+    if (isHighlightedMove() && isUserTurn) {
       const newPosition = arbiter.getMovedPiecePosition({
         position: appState.position,
         oldX: appState.selectedPiece[1],
