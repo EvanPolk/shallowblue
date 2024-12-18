@@ -10,6 +10,14 @@ export const reducer = (state, action) => {
       };
     }
 
+    case actionTypes.FILTER_VALID_MOVES: {
+      const potentialMoves = action.payload;
+      return {
+        ...state,
+        ...potentialMoves,
+      };
+    }
+
     case actionTypes.CLEAR_CANDIDATES: {
       const potentialMoves = action.payload;
       return {

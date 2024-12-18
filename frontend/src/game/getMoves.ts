@@ -2,6 +2,7 @@
  *  This file calculates potential moves for each piece individually, broken up by
  *  piece type i.e. { King, Queen, Rook, Bishop, Knight, Pawn }
  */
+import { getPostMovePosition, isInCheck } from './move';
 
 interface Props {
   position: string[][];
@@ -187,7 +188,13 @@ export const getPawnMoves = ({ position, rank, file }: Props) => {
       moves.push([dy, dx]);
     }
   });
+  moves.push(...getPawnAttacks({ position, rank, file }));
+  return moves;
+};
 
+export const getPawnAttacks = ({ position, rank, file }: Props) => {
+  const moves: number[][] = [];
+  const isWhite = position[rank][file][0] === 'w';
   // Calculating diagonal attacks
   const attacks = [
     [1, 1],
@@ -209,4 +216,51 @@ export const getPawnMoves = ({ position, rank, file }: Props) => {
     }
   });
   return moves;
+};
+
+interface FindKingProps {
+  position: string[][];
+  turn: string;
+}
+
+const findKing = ({ position, turn }: FindKingProps) => {
+  for (let rank = 0; rank < 8; rank++) {
+    for (let file = 0; file < 8; file++) {
+      if (position[rank][file] === turn + 'k') {
+        return [rank, file];
+      }
+    }
+  }
+  return [-1, -1];
+};
+
+interface ValidProps {
+  position: string[][];
+  candidates: number[][];
+  rank: number;
+  file: number;
+}
+
+export const filterValidMoves = ({
+  position,
+  candidates,
+  rank,
+  file,
+}: ValidProps) => {
+  const validMoves: number[][] = [];
+  const turn = position[rank][file][0];
+  candidates.forEach((move) => {
+    const newPosition = getPostMovePosition({
+      position,
+      oldY: rank,
+      oldX: file,
+      targetX: move[1],
+      targetY: move[0],
+    });
+    const king = findKing({ position: newPosition, turn });
+    if (!isInCheck({ position: newPosition, rank: king[0], file: king[1] })) {
+      validMoves.push(move);
+    }
+  });
+  return validMoves;
 };

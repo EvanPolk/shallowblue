@@ -1,5 +1,4 @@
-import React, { useContext } from 'react';
-import GameContext from '../contexts/context';
+import { useGameContext } from '../contexts/context';
 import { generateCandidates } from '../reducer/actions/move';
 
 interface Props {
@@ -8,7 +7,7 @@ interface Props {
 }
 
 function MoveIndicator({ rank, file }: Props) {
-  const { appState, dispatch } = useContext(GameContext);
+  const { appState, dispatch } = useGameContext();
   const position = appState.position;
 
   const handleClick = () => {

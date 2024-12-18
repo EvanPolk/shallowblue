@@ -7,7 +7,6 @@ import {
   generateNewTurn,
   generatePostMovePosition,
 } from '../reducer/actions/move';
-import { getNextTurn } from '../game/move';
 
 interface Props {
   rank: number;
@@ -18,9 +17,7 @@ function Square({ rank, file }: Props) {
   const { appState, dispatch } = useContext(GameContext);
 
   const isHighlightedMove = () => {
-    // Checking potential move selected
-    const potentialMoves = appState.potentialMoves;
-    return potentialMoves.some(
+    return appState.potentialMoves.some(
       (coord) => coord[0] === rank && coord[1] === file
     );
   };
@@ -42,8 +39,7 @@ function Square({ rank, file }: Props) {
           position: newPosition,
         })
       );
-      const turn = getNextTurn({ turn: appState.turn });
-      dispatch(generateNewTurn({ turn }));
+      dispatch(generateNewTurn({ turn: appState.turn === 'w' ? 'b' : 'w' }));
     }
   };
 

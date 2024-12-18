@@ -13,6 +13,15 @@ export const generateCandidates = ({
   };
 };
 
+export const generateFilteredMoves = ({
+  potentialMoves,
+}: GenerateCandidateMovesType) => {
+  return {
+    type: actionTypes.FILTER_VALID_MOVES,
+    payload: { potentialMoves },
+  };
+};
+
 export const clearCandidates = () => {
   return {
     type: actionTypes.CLEAR_CANDIDATES,

@@ -6,6 +6,7 @@ interface AppState {
   turn: string;
   potentialMoves: number[][];
   selectedPiece: number[];
+  attackMap: number[];
 }
 
 interface Action {
@@ -24,6 +25,8 @@ const GameContext = createContext<Value>({
     turn: '',
     potentialMoves: [],
     selectedPiece: [],
+
+    attackMap: [],
   },
   dispatch: () => {},
 });

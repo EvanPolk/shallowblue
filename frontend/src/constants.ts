@@ -4,4 +4,6 @@ export const initGameState = {
   position: createPosition(),
   turn: 'w',
   potentialMoves: [],
+  selectedPiece: [],
+  attackMap: [],
 };

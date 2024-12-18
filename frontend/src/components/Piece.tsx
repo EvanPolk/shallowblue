@@ -3,7 +3,7 @@ import { PieceImageMap } from '../helper';
 import GameContext from '../contexts/context';
 import {
   clearCandidates,
-  generateCandidates,
+  generateFilteredMoves,
   generateSelectedPiece,
 } from '../reducer/actions/move';
 import arbiter from '../game/arbiter';
@@ -19,17 +19,36 @@ function Piece({ rank, file }: Props) {
   const piece = position[rank][file];
 
   const handleClick = () => {
+    if (appState.turn !== position[rank][file][0]) {
+      dispatch(clearCandidates());
+      return;
+    }
+
     const potentialMoves = arbiter.getCandidateMoves({
       position,
       rank,
       file,
     });
-    if (potentialMoves != null) {
-      dispatch(generateCandidates({ potentialMoves }));
-      dispatch(generateSelectedPiece({ rank, file }));
-    } else {
+
+    if (potentialMoves == null) {
       dispatch(clearCandidates());
+      return;
     }
+
+    const validMoves = arbiter.getValidMoves({
+      position,
+      rank,
+      file,
+      candidates: potentialMoves,
+    });
+
+    if (validMoves == null) {
+      dispatch(clearCandidates());
+      return;
+    }
+
+    dispatch(generateFilteredMoves({ potentialMoves: validMoves }));
+    dispatch(generateSelectedPiece({ rank, file }));
   };
 
   return (

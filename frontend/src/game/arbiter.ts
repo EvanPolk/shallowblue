@@ -1,5 +1,6 @@
 import { generateSelectedPiece } from '../reducer/actions/move';
 import {
+  filterValidMoves,
   getBishopMoves,
   getKingMoves,
   getKnightMoves,
@@ -11,6 +12,13 @@ import { getPostMovePosition } from './move';
 
 interface CandidateMovesProps {
   position: string[][];
+  rank: number;
+  file: number;
+}
+
+interface ValidMoveProps {
+  position: string[][];
+  candidates: number[][];
   rank: number;
   file: number;
 }
@@ -37,6 +45,10 @@ const arbiter = {
     if (piece === 'b') return getBishopMoves({ position, rank, file });
     if (piece === 'n') return getKnightMoves({ position, rank, file });
     if (piece === 'p') return getPawnMoves({ position, rank, file });
+  },
+
+  getValidMoves: ({ position, rank, file, candidates }: ValidMoveProps) => {
+    return filterValidMoves({ position, candidates, rank, file });
   },
 
   getMovedPiecePosition: ({
