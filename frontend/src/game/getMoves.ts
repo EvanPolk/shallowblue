@@ -1,8 +1,10 @@
-/**
- *  This file calculates potential moves for each piece individually, broken up by
- *  piece type i.e. { King, Queen, Rook, Bishop, Knight, Pawn }
- */
 import { getPostMovePosition, isInCheck } from './move';
+
+enum ScanType {
+  VALID,
+  STOP,
+  LAST,
+}
 
 interface Props {
   position: string[][];
@@ -10,10 +12,31 @@ interface Props {
   file: number;
 }
 
+const isPsuedoLegal = (
+  position: string[][],
+  rank: number,
+  file: number,
+  targetRank: number,
+  targetFile: number
+) => {
+  const dyInBounds = 0 <= targetRank && targetRank < 8;
+  const dxInBounds = 0 <= targetFile && targetFile < 8;
+
+  if (!dyInBounds || !dxInBounds) return ScanType.VALID;
+
+  const currentPiece = position[rank][file];
+  const targetPiece = position[targetRank][targetFile];
+
+  if (targetPiece === '') return ScanType.VALID; // Empty square
+
+  const isFriendly = targetPiece[0] === currentPiece[0]; // Same color
+  return isFriendly ? ScanType.STOP : ScanType.LAST;
+};
+
 export const getKingMoves = ({ position, rank, file }: Props) => {
   const moves: number[][] = [];
 
-  // Potential king moves
+  // Potential king moves (Think one square perimeter)
   const directions = [
     [-1, -1],
     [0, -1],
@@ -25,29 +48,22 @@ export const getKingMoves = ({ position, rank, file }: Props) => {
     [1, 1],
   ];
 
-  directions.forEach((dir) => {
-    const dy = rank + dir[0];
-    const dx = file + dir[1];
-
-    const dyInBounds = 0 <= dy && dy < 8;
-    const dxInBounds = 0 <= dx && dx < 8;
-
-    if (!dyInBounds || !dxInBounds) {
+  directions.forEach(([dy, dx]) => {
+    const r = rank + dy;
+    const f = file + dx;
+    const scanCondition = isPsuedoLegal(position, rank, file, r, f);
+    if (scanCondition === ScanType.STOP) {
       return;
     }
-
-    if (position[dy][dx][0] !== position[rank][file][0]) {
-      moves.push([dy, dx]);
-    }
+    moves.push([r, f]);
   });
   return moves;
 };
 
 export const getQueenMoves = ({ position, rank, file }: Props) => {
-  let moves: number[][] = [];
   const potentialRookMoves = getRookMoves({ position, rank, file });
   const potentialBishopMoves = getBishopMoves({ position, rank, file });
-  moves = [...moves, ...potentialRookMoves, ...potentialBishopMoves];
+  const moves = [...potentialRookMoves, ...potentialBishopMoves];
   return moves;
 };
 
@@ -60,31 +76,16 @@ export const getRookMoves = ({ position, rank, file }: Props) => {
     [0, -1],
   ];
 
-  directions.forEach((dir) => {
-    let dy = rank + dir[0];
-    let dx = file + dir[1];
-    for (let i = 0; i < 8; i++) {
-      const dyInBounds = 0 <= dy && dy < 8;
-      const dxInBounds = 0 <= dx && dx < 8;
+  directions.forEach(([dy, dx]) => {
+    let r = rank + dy;
+    let f = file + dx;
+    let scanCondition = isPsuedoLegal(position, rank, file, r, f);
 
-      if (!dyInBounds || !dxInBounds) {
-        break;
-      }
-
-      if (position[dy][dx] === '') {
-        // potential move on empty square
-        moves.push([dy, dx]);
-      } else if (position[dy][dx][0] !== position[rank][file][0]) {
-        // potential move on enemy piece
-        moves.push([dy, dx]);
-        break;
-      } else if (position[dy][dx][0] === position[rank][file][0]) {
-        // potential move on friendly piece
-        break;
-      }
-
-      dy += dir[0];
-      dx += dir[1];
+    while (scanCondition !== ScanType.STOP) {
+      moves.push([r, f]);
+      r += dy;
+      f += dx;
+      scanCondition = isPsuedoLegal(position, rank, file, r, f);
     }
   });
   return moves;
@@ -98,31 +99,16 @@ export const getBishopMoves = ({ position, rank, file }: Props) => {
     [1, -1],
     [-1, -1],
   ];
-  directions.forEach((dir) => {
-    let dy = rank + dir[0];
-    let dx = file + dir[1];
-    for (let i = 0; i < 8; i++) {
-      const dyInBounds = 0 <= dy && dy < 8;
-      const dxInBounds = 0 <= dx && dx < 8;
+  directions.forEach(([dy, dx]) => {
+    let r = rank + dy;
+    let f = file + dx;
+    let scanCondition = isPsuedoLegal(position, rank, file, r, f);
 
-      if (!dyInBounds || !dxInBounds) {
-        break;
-      }
-
-      if (position[dy][dx] === '') {
-        // potential move on empty square
-        moves.push([dy, dx]);
-      } else if (position[dy][dx][0] !== position[rank][file][0]) {
-        // potential move on enemy piece
-        moves.push([dy, dx]);
-        break;
-      } else if (position[dy][dx][0] === position[rank][file][0]) {
-        // potential move on friendly piece
-        break;
-      }
-
-      dy += dir[0];
-      dx += dir[1];
+    while (scanCondition !== ScanType.STOP) {
+      moves.push([r, f]);
+      r += dy;
+      f += dx;
+      scanCondition = isPsuedoLegal(position, rank, file, r, f);
     }
   });
   return moves;
@@ -141,23 +127,12 @@ export const getKnightMoves = ({ position, rank, file }: Props) => {
     [-1, -2],
   ];
 
-  directions.forEach((dir) => {
-    const dy = rank + dir[0];
-    const dx = file + dir[1];
+  directions.forEach(([dy, dx]) => {
+    const r = rank + dy;
+    const f = file + dx;
 
-    const dyInBounds = 0 <= dy && dy < 8;
-    const dxInBounds = 0 <= dx && dx < 8;
-
-    if (!dyInBounds || !dxInBounds) {
-      return;
-    }
-
-    if (position[dy][dx] === '') {
-      // potential move on empty square
-      moves.push([dy, dx]);
-    } else if (position[dy][dx][0] !== position[rank][file][0]) {
-      // potential move on enemy piece
-      moves.push([dy, dx]);
+    if (isPsuedoLegal(position, rank, file, r, f) !== ScanType.STOP) {
+      moves.push([r, f]);
     }
   });
   return moves;
@@ -165,27 +140,22 @@ export const getKnightMoves = ({ position, rank, file }: Props) => {
 
 export const getPawnMoves = ({ position, rank, file }: Props) => {
   const moves: number[][] = [];
-  const directions = [[1, 0]];
   const isWhite = position[rank][file][0] === 'w';
   const originalRank = isWhite ? 6 : 1;
+  const directions =
+    rank === originalRank
+      ? [[1, 0]]
+      : [
+          [1, 0],
+          [2, 0],
+        ];
 
-  if (rank === originalRank) {
-    directions.push([2, 0]);
-  }
+  directions.forEach(([dy, dx]) => {
+    const r = isWhite ? rank - dy : rank + dy;
+    const f = isWhite ? file - dx : file + dx;
 
-  directions.forEach((dir) => {
-    const dy = isWhite ? rank - dir[0] : rank + dir[0];
-    const dx = isWhite ? file - dir[1] : file + dir[1];
-
-    const dyInBounds = 0 <= dy && dy < 8;
-    const dxInBounds = 0 <= dx && dx < 8;
-
-    if (!dyInBounds || !dxInBounds) {
-      return;
-    }
-
-    if (position[dy][dx] === '') {
-      moves.push([dy, dx]);
+    if (isPsuedoLegal(position, rank, file, r, f) === ScanType.VALID) {
+      moves.push([r, f]);
     }
   });
   moves.push(...getPawnAttacks({ position, rank, file }));
@@ -257,6 +227,7 @@ export const filterValidMoves = ({
       targetX: move[1],
       targetY: move[0],
     });
+
     const king = findKing({ position: newPosition, turn });
     if (!isInCheck({ position: newPosition, rank: king[0], file: king[1] })) {
       validMoves.push(move);

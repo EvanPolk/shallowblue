@@ -6,27 +6,24 @@ interface AppState {
   turn: string;
   potentialMoves: number[][];
   selectedPiece: number[];
-  attackMap: number[];
 }
 
 interface Action {
   type: string;
-  payload: any;
+  payload: unknown;
 }
 
-interface Value {
+interface Value<Action> {
   appState: AppState;
   dispatch: React.Dispatch<Action>;
 }
 
-const GameContext = createContext<Value>({
+const GameContext = createContext<Value<Action>>({
   appState: {
     position: [],
     turn: '',
     potentialMoves: [],
     selectedPiece: [],
-
-    attackMap: [],
   },
   dispatch: () => {},
 });

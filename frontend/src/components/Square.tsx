@@ -23,6 +23,9 @@ function Square({ rank, file }: Props) {
   };
 
   const handleMoveClick = () => {
+    if (appState.selectedPiece.length != 2) {
+      return;
+    }
     const oldRank = appState.selectedPiece[0];
     const oldFile = appState.selectedPiece[1];
     const isUserTurn = appState.turn === appState.position[oldRank][oldFile][0];
