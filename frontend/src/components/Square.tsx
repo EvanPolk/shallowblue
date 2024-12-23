@@ -17,18 +17,18 @@ function Square({ rank, file }: Props) {
   const { appState, dispatch } = useContext(GameContext);
 
   const isHighlightedMove = () => {
-    return appState.potentialMoves.some(
-      (coord) => coord[0] === rank && coord[1] === file
-    );
+    return appState.potentialMoves.some(([r, f]) => r === rank && f === file);
   };
 
   const handleMoveClick = () => {
     if (appState.selectedPiece.length != 2) {
+      // prevents error for init array []
       return;
     }
-    const oldRank = appState.selectedPiece[0];
-    const oldFile = appState.selectedPiece[1];
+
+    const [oldRank, oldFile] = appState.selectedPiece;
     const isUserTurn = appState.turn === appState.position[oldRank][oldFile][0];
+
     if (isHighlightedMove() && isUserTurn) {
       const newPosition = arbiter.getMovedPiecePosition({
         position: appState.position,
@@ -46,31 +46,26 @@ function Square({ rank, file }: Props) {
     }
   };
 
-  const cornerStyle = (rank: number, file: number) => {
-    if (rank === 0 && file === 0) {
-      return 'rounded-tl-md';
-    } else if (rank === 0 && file === 7) {
-      return 'rounded-tr-md';
-    } else if (rank === 7 && file === 0) {
-      return 'rounded-bl-md';
-    } else if (rank === 7 && file === 7) {
-      return 'rounded-br-md';
-    }
+  const getCornerStyle = () => {
+    if (rank === 0 && file === 0) return 'rounded-tl-md';
+    if (rank === 0 && file === 7) return 'rounded-tr-md';
+    if (rank === 7 && file === 0) return 'rounded-bl-md';
+    if (rank === 7 && file === 7) return 'rounded-br-md';
     return '';
+  };
+
+  const getHighlightStyle = () => {
+    const isWhiteSquare = rank % 2 === file % 2;
+    if (isWhiteSquare && isHighlightedMove()) return 'bg-white-select';
+    if (!isWhiteSquare && isHighlightedMove()) return 'bg-black-select';
+    if (isWhiteSquare) return 'bg-white';
+    if (!isWhiteSquare) return 'bg-black';
   };
 
   return (
     <div
       onClick={handleMoveClick}
-      className={`h-20 w-20 relative ${cornerStyle(rank, file)} ${
-        rank % 2 === file % 2
-          ? isHighlightedMove()
-            ? 'bg-white-select'
-            : 'bg-white'
-          : isHighlightedMove()
-          ? 'bg-black-select'
-          : 'bg-black'
-      }`}
+      className={`h-20 w-20 relative ${getCornerStyle()} ${getHighlightStyle()}`}
     >
       {isHighlightedMove() && <MoveIndicator rank={rank} file={file} />}
       <Piece rank={rank} file={file} />

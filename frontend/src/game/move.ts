@@ -5,7 +5,7 @@ import {
   getRookMoves,
 } from './getMoves';
 
-interface Props {
+interface PostMoveProps {
   position: string[][];
   oldX: number;
   oldY: number;
@@ -19,7 +19,7 @@ export const getPostMovePosition = ({
   oldX,
   targetX,
   targetY,
-}: Props) => {
+}: PostMoveProps) => {
   const newPosition = position.map((row) => {
     return row.slice();
   });
@@ -40,26 +40,26 @@ export const isInCheck = ({ position, rank, file }: CheckProps) => {
   const enemy = friend === 'w' ? 'b' : 'w';
 
   const knightAttacked = getKnightMoves({ position, rank, file }).some(
-    (coord) => {
-      return position[coord[0]][coord[1]] === enemy + 'n';
+    ([y, x]) => {
+      return position[y][x] === enemy + 'n';
     }
   );
 
   const bishopQueenAttacked = getBishopMoves({ position, rank, file }).some(
-    (coord) => {
-      const attackingPiece = position[coord[0]][coord[1]];
+    ([y, x]) => {
+      const attackingPiece = position[y][x];
       return attackingPiece === enemy + 'b' || attackingPiece === enemy + 'q';
     }
   );
   const rookQueenAttacked = getRookMoves({ position, rank, file }).some(
-    (coord) => {
-      const attackingPiece = position[coord[0]][coord[1]];
+    ([y, x]) => {
+      const attackingPiece = position[y][x];
       return attackingPiece === enemy + 'r' || attackingPiece === enemy + 'q';
     }
   );
   const pawnAttacked = getPawnAttacks({ position, rank, file }).some(
-    (coord) => {
-      return position[coord[0]][coord[1]] === enemy + 'p';
+    ([y, x]) => {
+      return position[y][x] === enemy + 'p';
     }
   );
   return (

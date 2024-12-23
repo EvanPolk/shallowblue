@@ -22,7 +22,7 @@ const isPsuedoLegal = (
   const dyInBounds = 0 <= targetRank && targetRank < 8;
   const dxInBounds = 0 <= targetFile && targetFile < 8;
 
-  if (!dyInBounds || !dxInBounds) return ScanType.VALID;
+  if (!dyInBounds || !dxInBounds) return ScanType.STOP;
 
   const currentPiece = position[rank][file];
   const targetPiece = position[targetRank][targetFile];
@@ -52,10 +52,10 @@ export const getKingMoves = ({ position, rank, file }: Props) => {
     const r = rank + dy;
     const f = file + dx;
     const scanCondition = isPsuedoLegal(position, rank, file, r, f);
-    if (scanCondition === ScanType.STOP) {
-      return;
+    if (scanCondition !== ScanType.STOP) {
+      ``;
+      moves.push([r, f]);
     }
-    moves.push([r, f]);
   });
   return moves;
 };
@@ -81,11 +81,15 @@ export const getRookMoves = ({ position, rank, file }: Props) => {
     let f = file + dx;
     let scanCondition = isPsuedoLegal(position, rank, file, r, f);
 
-    while (scanCondition !== ScanType.STOP) {
+    while (scanCondition === ScanType.VALID) {
       moves.push([r, f]);
       r += dy;
       f += dx;
       scanCondition = isPsuedoLegal(position, rank, file, r, f);
+    }
+
+    if (scanCondition === ScanType.LAST) {
+      moves.push([r, f]);
     }
   });
   return moves;
@@ -104,11 +108,15 @@ export const getBishopMoves = ({ position, rank, file }: Props) => {
     let f = file + dx;
     let scanCondition = isPsuedoLegal(position, rank, file, r, f);
 
-    while (scanCondition !== ScanType.STOP) {
+    while (scanCondition === ScanType.VALID) {
       moves.push([r, f]);
       r += dy;
       f += dx;
       scanCondition = isPsuedoLegal(position, rank, file, r, f);
+    }
+
+    if (scanCondition === ScanType.LAST) {
+      moves.push([r, f]);
     }
   });
   return moves;
@@ -144,11 +152,11 @@ export const getPawnMoves = ({ position, rank, file }: Props) => {
   const originalRank = isWhite ? 6 : 1;
   const directions =
     rank === originalRank
-      ? [[1, 0]]
-      : [
+      ? [
           [1, 0],
           [2, 0],
-        ];
+        ]
+      : [[1, 0]];
 
   directions.forEach(([dy, dx]) => {
     const r = isWhite ? rank - dy : rank + dy;
@@ -219,18 +227,18 @@ export const filterValidMoves = ({
 }: ValidProps) => {
   const validMoves: number[][] = [];
   const turn = position[rank][file][0];
-  candidates.forEach((move) => {
+  candidates.forEach(([r, f]) => {
     const newPosition = getPostMovePosition({
       position,
       oldY: rank,
       oldX: file,
-      targetX: move[1],
-      targetY: move[0],
+      targetY: r,
+      targetX: f,
     });
 
-    const king = findKing({ position: newPosition, turn });
-    if (!isInCheck({ position: newPosition, rank: king[0], file: king[1] })) {
-      validMoves.push(move);
+    const [kingRank, kingFile] = findKing({ position: newPosition, turn });
+    if (!isInCheck({ position: newPosition, rank: kingRank, file: kingFile })) {
+      validMoves.push([r, f]);
     }
   });
   return validMoves;
