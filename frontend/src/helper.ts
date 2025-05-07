@@ -60,8 +60,19 @@ export const createGameNotation = ({
   targetRank,
   targetFile,
 }: CreateGameNotationProps) => {
-  const start = differentiatePiece({position, oldRank, oldFile, targetRank, targetFile});
+  const start = differentiatePiece({
+    position,
+    oldRank,
+    oldFile,
+    targetRank,
+    targetFile,
+  });
+
+  const files = 'abcdefgh';
   if (position[targetRank][targetFile] !== '')
+    return start + 'x' + files[targetFile] + (8 - targetRank);
+  if (position[targetRank][targetFile] === '')
+    return start + files[targetFile] + (8 - targetRank);
 };
 
 const differentiatePiece = ({
@@ -96,17 +107,18 @@ const differentiatePiece = ({
 
   moves.forEach(([r, f]) => {
     if (position[r][f] !== position[oldRank][oldFile]) return;
-    if (r === oldRank && f === oldFile) return;
 
     if (r === oldRank) sameRank = true;
     if (f === oldFile) sameFile = true;
   });
 
-  let res = position[oldRank][oldFile];
+  const files = 'abcdefgh';
+  let res = position[targetRank][targetFile];
+
   // TODO: sameRank should add file differentiater
   // TODO: files should be denoted by alphabet a-h
-  if (sameRank) res += oldRank;
-  if (sameFile) res += oldFile;
+  if (sameRank) res += oldRank + 1;
+  if (sameFile) res += files[oldFile];
 
   return res;
 };

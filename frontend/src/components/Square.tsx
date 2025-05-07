@@ -7,6 +7,7 @@ import {
   generateNewTurn,
   generatePostMovePosition,
 } from '../reducer/actions/move';
+import { createGameNotation } from '../helper';
 
 interface Props {
   rank: number;
@@ -37,6 +38,15 @@ function Square({ rank, file }: Props) {
         targetX: file,
         targetY: rank,
       });
+      console.log(
+        createGameNotation({
+          position: appState.position,
+          oldRank: appState.selectedPiece[0],
+          oldFile: appState.selectedPiece[1],
+          targetRank: rank,
+          targetFile: file,
+        })
+      );
       dispatch(
         generatePostMovePosition({
           position: newPosition,
